@@ -1,4 +1,8 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+// import { EventEmitter, Output } from "@angular/core";
+import { Component } from "@angular/core";
+import { NgForm } from "@angular/forms";
+
+import { PostsService } from "../posts.service";
 
 @Component({
   selector: "app-post-create",
@@ -8,10 +12,19 @@ import { Component, EventEmitter, Output } from "@angular/core";
 export class PostCreateComponent {
   enteredTitle = "";
   enteredContent = "";
-  @Output() postCreated = new EventEmitter();
+  // Output will turn this event to which you can listen from the parent component.
+  // @Output() postCreated = new EventEmitter<Post>();
 
-  onAddPost() {
-    const post = { title: this.enteredTitle, content: this.enteredContent };
-    this.postCreated.emit(post);
+  constructor(public postsService: PostsService) {}
+
+  onAddPost(form: NgForm) {
+    if (form.invalid) {
+      return;
+    }
+    // const post: Post = { title: form.value.title, content: form.value.content };
+    // event that you can listen
+    // this.postCreated.emit(post);
+    this.postsService.addPost(form.value.title, form.value.content);
+    form.resetForm();
   }
 }
