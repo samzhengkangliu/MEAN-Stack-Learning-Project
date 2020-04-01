@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Router } from '@angular/router';
 import { Subject } from "rxjs";
 import { map } from "rxjs/operators";
 
@@ -16,7 +17,7 @@ export class PostsService {
   private postsUpdated = new Subject<Post[]>();
 
   // Inject HttpClient
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   getPosts() {
     // Do not return the original array of it, be immutable
@@ -50,16 +51,40 @@ export class PostsService {
     return this.postsUpdated.asObservable();
   }
 
+  getPost(postId: string) {
+    return this.http.get<{ _id: string; title: string; content: string }>(
+      "http://localhost:3000/api/posts/" + postId
+    );
+  }
+
   addPost(title: string, content: string) {
     const newPost: Post = { id: null, title: title, content: content };
     this.http
-      .post<{ message: string, postId: string }>("http://localhost:3000/api/posts", newPost)
+      .post<{ message: string; postId: string }>(
+        "http://localhost:3000/api/posts",
+        newPost
+      )
       .subscribe(responseData => {
         const id = responseData.postId;
         newPost.id = id;
         this.posts.push(newPost);
         // pushes new value and it emits a new value and this value is a copy of posts
         this.postsUpdated.next([...this.posts]);
+        this.router.navigate(["/"]);
+      });
+  }
+
+  updatePost(id: string, title: string, content: string) {
+    const post: Post = { id: id, title: title, content: content };
+    this.http
+      .put("http://localhost:3000/api/posts/" + id, post)
+      .subscribe(response => {
+        const updatedPosts = [...this.posts];
+        const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+        updatedPosts[oldPostIndex] = post;
+        this.posts = updatedPosts;
+        this.postsUpdated.next([...this.posts]);
+        this.router.navigate(["/"]);
       });
   }
 

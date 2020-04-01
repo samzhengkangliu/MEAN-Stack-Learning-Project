@@ -1,12 +1,14 @@
 <mat-card>
-  <form (submit)="onAddPost(postForm)" #postForm="ngForm">
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form (submit)="onSavePost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
+      <!-- ? is a elvis operator to check the value exists before access -->
       <input
         matInput
         type="text"
         name="title"
         placeholder="Title"
-        ngModel
+        [ngModel]="post?.title"
         required
         #title="ngModel"
       />
@@ -18,7 +20,7 @@
         rows="4"
         name="content"
         placeholder="Content"
-        ngModel
+        [ngModel]="post?.content"
         required
         #content="ngModel"
       ></textarea>

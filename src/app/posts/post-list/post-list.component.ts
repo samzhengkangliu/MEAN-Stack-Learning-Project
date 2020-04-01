@@ -15,6 +15,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   // bindable from the parent component via property binding
   // @Input() posts: Post[] = [];
   posts: Post[] = [];
+  isLoading: boolean = false;
   private postsSub: Subscription;
 
   // Dependency Injection with the PostsService
@@ -23,6 +24,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   // runs automatically everytime we create this component
   ngOnInit() {
+    this.isLoading = true;
     this.postsService.getPosts();
     this.postsSub = this.postsService
       .getPostUpdateListener()
@@ -32,6 +34,7 @@ export class PostListComponent implements OnInit, OnDestroy {
       // complete() will be called whenever the observable is completed.
       // Note: Subcription will not be canceled when the component is teared down
       .subscribe((posts: Post[]) => {
+        this.isLoading = false;
         this.posts = posts;
       });
   }
