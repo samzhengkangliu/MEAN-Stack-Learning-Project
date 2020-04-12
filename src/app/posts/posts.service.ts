@@ -16,7 +16,7 @@ export class PostsService {
   // where we can manually call next() instead of passively waiting for a response
   private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
-  // Inject HttpClient
+  // Inject HttpClient and interceptor for token
   constructor(private http: HttpClient, private router: Router) {}
 
   getPosts(postsPerPage: number, currentPage: number) {
