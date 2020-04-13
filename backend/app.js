@@ -27,7 +27,9 @@ mongoose
 // available under the req.body property.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/images", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join("images")));
+// app.use("/images", express.static(path.join(__dirname, "images")));
+// app.use("/", express.static(path.join(__dirname, "angular")));
 
 // Allow CORS(Cross-origin resource sharing)
 app.use((req, res, next) => {
@@ -46,5 +48,8 @@ app.use((req, res, next) => {
 // filter for requests going to api/posts
 app.use("/api/posts", postsRoutes);
 app.use("/api/user", userRoutes);
+// app.use((req, res, next) => {
+//   res.sendFile(path.join(__dirname, "angular", "index.html"));
+// });
 
 module.exports = app;

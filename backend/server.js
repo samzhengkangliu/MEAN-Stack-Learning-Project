@@ -1,5 +1,5 @@
 // The way to do import in node.js
-const app = require("./backend/app");
+const app = require("./app");
 const debug = require("debug")("node-angular");
 const http = require("http");
 
