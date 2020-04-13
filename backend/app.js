@@ -11,7 +11,9 @@ const app = express();
 // Connect to MangoDB
 mongoose
   .connect(
-    "mongodb+srv://sam:ei2ymdqnJjzsPfVp@cluster0-gmhhm.mongodb.net/node-angular?retryWrites=true&w=majority",
+    "mongodb+srv://sam:" +
+      process.env.MONGO_ATLAS_PW +
+      "@cluster0-gmhhm.mongodb.net/node-angular?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => {

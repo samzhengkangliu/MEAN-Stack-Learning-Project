@@ -4,7 +4,10 @@ import { Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { map } from "rxjs/operators";
 
+import { environment } from "../../environments/environment";
 import { Post } from "./post.model";
+
+const BACKEND_URL = environment.apiURL + "/posts/";
 
 // Injectable: To add this service available to the Angular, only one instance
 // The other way is to import it in app.module.ts - providers; this will create multiple instances
@@ -29,30 +32,30 @@ export class PostsService {
     // http will handle unsusribe here
     this.http
       .get<{ message: string; posts: any; maxPosts: number }>(
-        "http://localhost:3000/api/posts" + queryParams
+        BACKEND_URL + queryParams
       )
       // methods accept multiple operators
       .pipe(
-        map(postData => {
+        map((postData) => {
           return {
-            posts: postData.posts.map(post => {
+            posts: postData.posts.map((post) => {
               return {
                 title: post.title,
                 content: post.content,
                 id: post._id,
                 imagePath: post.imagePath,
-                creator: post.creator
+                creator: post.creator,
               };
             }),
-            maxPosts: postData.maxPosts
+            maxPosts: postData.maxPosts,
           };
         })
       )
-      .subscribe(transformedPostData => {
+      .subscribe((transformedPostData) => {
         this.posts = transformedPostData.posts;
         this.postsUpdated.next({
           posts: [...this.posts],
-          postCount: transformedPostData.maxPosts
+          postCount: transformedPostData.maxPosts,
         });
       });
   }
@@ -69,7 +72,7 @@ export class PostsService {
       content: string;
       imagePath: string;
       creator: string;
-    }>("http://localhost:3000/api/posts/" + postId);
+    }>(BACKEND_URL + postId);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -79,11 +82,8 @@ export class PostsService {
     postData.append("content", content);
     postData.append("image", image, title);
     this.http
-      .post<{ message: string; post: Post }>(
-        "http://localhost:3000/api/posts",
-        postData
-      )
-      .subscribe(responseData => {
+      .post<{ message: string; post: Post }>(BACKEND_URL, postData)
+      .subscribe((responseData) => {
         this.router.navigate(["/"]);
       });
   }
@@ -103,28 +103,26 @@ export class PostsService {
         title: title,
         content: content,
         imagePath: image,
-        creator: null
+        creator: null,
       };
     }
-    this.http
-      .put("http://localhost:3000/api/posts/" + id, postData)
-      .subscribe(response => {
-        // const updatedPosts = [...this.posts];
-        // const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
-        // const post: Post = {
-        //   id: id,
-        //   title: title,
-        //   content: content,
-        //   imagePath: ""
-        // };
-        // updatedPosts[oldPostIndex] = post;
-        // this.posts = updatedPosts;
-        // this.postsUpdated.next([...this.posts]);
-        this.router.navigate(["/"]);
-      });
+    this.http.put(BACKEND_URL + id, postData).subscribe((response) => {
+      // const updatedPosts = [...this.posts];
+      // const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
+      // const post: Post = {
+      //   id: id,
+      //   title: title,
+      //   content: content,
+      //   imagePath: ""
+      // };
+      // updatedPosts[oldPostIndex] = post;
+      // this.posts = updatedPosts;
+      // this.postsUpdated.next([...this.posts]);
+      this.router.navigate(["/"]);
+    });
   }
 
   deletePost(postId: string) {
-    return this.http.delete("http://localhost:3000/api/posts/" + postId);
+    return this.http.delete(BACKEND_URL + postId);
   }
 }
